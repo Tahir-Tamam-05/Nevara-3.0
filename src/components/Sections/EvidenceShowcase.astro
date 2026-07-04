@@ -1,0 +1,299 @@
+---
+/**
+ * Editorial evidence showcase — curated single pages from real, delivered
+ * reports (see src/lib/content.ts for the selection). Each card shows one
+ * page, never a whole report: clicking enlarges that page alone in a
+ * lightbox with no next/previous control and no PDF or download access.
+ */
+import { evidenceShowcase } from '@lib/content';
+import { X } from 'lucide-astro';
+---
+
+<section id="evidence" class="section-pad" aria-labelledby="evidence-heading">
+  <div class="container-site reveal">
+    <p class="label-caps kicker">Selected evidence</p>
+    <h2 id="evidence-heading" class="font-display evidence-headline">
+      Depth you can verify. <em>Not the whole file.</em>
+    </h2>
+    <p class="evidence-lede">
+      A curated look at what a NEVARA assessment actually contains — drawn from real, delivered
+      reports across different sites.
+    </p>
+  </div>
+
+  <div
+    class="evidence-scroller reveal"
+    data-reveal-delay="150"
+    tabindex="0"
+    role="group"
+    aria-label="Selected report pages — scrolls horizontally"
+  >
+    {
+      evidenceShowcase.map(({ src, label, project, caption }) => (
+        <button
+          type="button"
+          class="evidence-item"
+          data-evidence-trigger
+          data-src={src}
+          data-label={label}
+          data-project={project}
+        >
+          <span class="evidence-media">
+            <img src={src} alt={`${label} — ${project}`} loading="lazy" width="900" height="1273" />
+          </span>
+          <span class="evidence-caption">
+            <span class="label-caps evidence-label">{label}</span>
+            <span class="evidence-project">{project}</span>
+          </span>
+        </button>
+      ))
+    }
+
+    <div class="evidence-item evidence-cta">
+      <p class="font-display evidence-cta-headline">Want to see the complete evidence?</p>
+      <p class="evidence-cta-body">
+        Every NEVARA assessment is built around the site, monitoring objective, and decisions
+        that need to be supported.
+      </p>
+      <div class="evidence-cta-actions">
+        <a href="/contact" class="btn btn-primary on-dark">Request an Assessment</a>
+        <a href="/contact#info-heading" class="btn btn-secondary on-dark">Contact NEVARA</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" data-evidence-lightbox hidden role="dialog" aria-modal="true" aria-label="Report page preview">
+  <button type="button" class="lightbox-close" data-evidence-close aria-label="Close preview">
+    <X size={22} stroke-width={1.75} aria-hidden="true" />
+  </button>
+  <figure class="lightbox-figure">
+    <img data-evidence-lightbox-img src="" alt="" />
+    <figcaption>
+      <span class="label-caps" data-evidence-lightbox-label></span>
+      <span data-evidence-lightbox-project></span>
+    </figcaption>
+  </figure>
+</div>
+
+<style>
+  .kicker {
+    color: var(--color-moss);
+    margin-bottom: 24px;
+  }
+  .evidence-headline {
+    font-size: clamp(2.5rem, 4.5vw, var(--text-section));
+  }
+  .evidence-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+  .evidence-lede {
+    margin-top: 20px;
+    max-width: 54ch;
+    color: rgba(16, 16, 16, 0.7);
+  }
+
+  .evidence-scroller {
+    display: flex;
+    gap: 28px;
+    overflow-x: auto;
+    padding: clamp(40px, 5vw, 64px) max(48px, calc((100vw - 1280px) / 2 + 48px)) 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(14, 59, 46, 0.25) transparent;
+  }
+
+  .evidence-item {
+    flex: 0 0 auto;
+    width: clamp(240px, 26vw, 340px);
+    text-align: left;
+  }
+
+  button.evidence-item {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    display: block;
+  }
+
+  .evidence-media {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-report);
+  }
+  .evidence-media img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-soft-1);
+    transition:
+      transform 0.35s var(--ease-out-calm),
+      box-shadow 0.35s var(--ease-out-calm);
+  }
+  .evidence-item:hover .evidence-media img,
+  .evidence-item:focus-visible .evidence-media img {
+    transform: translateY(-4px) scale(1.015);
+    box-shadow: var(--shadow-soft-2);
+  }
+
+  .evidence-caption {
+    display: block;
+    margin-top: 14px;
+  }
+  .evidence-label {
+    display: block;
+    color: var(--color-forest);
+    margin-bottom: 4px;
+  }
+  .evidence-project {
+    display: block;
+    font-size: var(--text-small);
+    color: rgba(16, 16, 16, 0.55);
+  }
+
+  /* Conversion card — same footprint as the others, distinct treatment */
+  .evidence-cta {
+    background: var(--color-forest);
+    color: var(--color-cream);
+    border-radius: var(--radius-card);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+  }
+  .evidence-cta-headline {
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+  .evidence-cta-body {
+    font-size: var(--text-small);
+    line-height: 1.6;
+    color: rgba(247, 246, 242, 0.75);
+  }
+  .evidence-cta-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .evidence-cta-actions .btn {
+    height: 46px;
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 768px) {
+    .evidence-scroller {
+      padding-inline: 24px;
+    }
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Lightbox — single selected page only, no navigation, no download   */
+  /* ---------------------------------------------------------------- */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(24px, 6vw, 64px);
+    background: rgba(10, 18, 13, 0.9);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+  .lightbox[hidden] {
+    display: none;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: clamp(16px, 3vw, 32px);
+    right: clamp(16px, 3vw, 32px);
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    border: 1px solid rgba(247, 246, 242, 0.3);
+    background: rgba(247, 246, 242, 0.1);
+    color: var(--color-cream);
+    cursor: pointer;
+    transition: background-color 0.25s var(--ease-out-calm);
+  }
+  .lightbox-close:hover {
+    background: rgba(247, 246, 242, 0.2);
+  }
+
+  .lightbox-figure {
+    max-width: min(600px, 90vw);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .lightbox-figure img {
+    max-width: 100%;
+    max-height: 78vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-report);
+    box-shadow: var(--shadow-soft-3);
+    background: #fff;
+  }
+  .lightbox-figure figcaption {
+    text-align: center;
+    color: var(--color-cream);
+  }
+  .lightbox-figure figcaption span:first-child {
+    display: block;
+    color: rgba(247, 246, 242, 0.65);
+    margin-bottom: 4px;
+  }
+</style>
+
+<script>
+  const scroller = document.querySelector<HTMLElement>('.evidence-scroller')!;
+  const triggers = [...scroller.querySelectorAll<HTMLButtonElement>('[data-evidence-trigger]')];
+  const lightbox = document.querySelector<HTMLElement>('[data-evidence-lightbox]')!;
+  const lightboxImg = lightbox.querySelector<HTMLImageElement>('[data-evidence-lightbox-img]')!;
+  const lightboxLabel = lightbox.querySelector<HTMLElement>('[data-evidence-lightbox-label]')!;
+  const lightboxProject = lightbox.querySelector<HTMLElement>('[data-evidence-lightbox-project]')!;
+  const closeBtn = lightbox.querySelector<HTMLButtonElement>('[data-evidence-close]')!;
+
+  let lastTrigger: HTMLElement | null = null;
+
+  function openLightbox(trigger: HTMLButtonElement): void {
+    lastTrigger = trigger;
+    lightboxImg.src = trigger.dataset.src!;
+    lightboxImg.alt = `${trigger.dataset.label} — ${trigger.dataset.project}`;
+    lightboxLabel.textContent = trigger.dataset.label!;
+    lightboxProject.textContent = trigger.dataset.project!;
+    lightbox.hidden = false;
+    document.documentElement.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function closeLightbox(): void {
+    lightbox.hidden = true;
+    lightboxImg.src = '';
+    document.documentElement.style.overflow = '';
+    lastTrigger?.focus();
+  }
+
+  triggers.forEach((trigger) => trigger.addEventListener('click', () => openLightbox(trigger)));
+  closeBtn.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
+  });
+</script>

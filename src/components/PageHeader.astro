@@ -1,0 +1,45 @@
+---
+/** Editorial header for subpages (Reports, Projects, Contact). */
+interface Props {
+  kicker: string;
+  headline: string;
+  headlineEm?: string;
+  lede?: string;
+}
+const { kicker, headline, headlineEm, lede } = Astro.props;
+---
+
+<header class="page-header">
+  <div class="container-site">
+    <p class="label-caps kicker reveal">{kicker}</p>
+    <h1 class="font-display page-headline reveal" data-reveal-delay="80">
+      {headline}
+      {headlineEm && <em>{headlineEm}</em>}
+    </h1>
+    {lede && <p class="page-lede reveal" data-reveal-delay="160">{lede}</p>}
+  </div>
+</header>
+
+<style>
+  .page-header {
+    padding: calc(84px + clamp(64px, 10vw, 128px)) 0 clamp(40px, 6vw, 72px);
+  }
+  .kicker {
+    color: var(--color-moss);
+    margin-bottom: 24px;
+  }
+  .page-headline {
+    font-size: clamp(2.75rem, 5.5vw, var(--text-display));
+    max-width: 20ch;
+  }
+  .page-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+  .page-lede {
+    margin-top: 22px;
+    max-width: 54ch;
+    font-size: var(--text-body-lg);
+    color: rgba(16, 16, 16, 0.7);
+  }
+</style>

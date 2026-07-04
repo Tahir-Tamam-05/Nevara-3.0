@@ -1,0 +1,185 @@
+---
+/** Section 6 — Current projects. Real engagements only (see src/lib/content.ts). */
+import { projects } from '@lib/content';
+import { ArrowUpRight } from 'lucide-astro';
+---
+
+<section id="projects" class="section-pad projects-section" aria-labelledby="projects-heading">
+  <div class="container-site">
+    <div class="reveal">
+      <p class="label-caps kicker">Current projects</p>
+      <h2 id="projects-heading" class="font-display projects-headline">
+        Where the work <em>stands on record.</em>
+      </h2>
+    </div>
+
+    <ul class="projects-grid">
+      {
+        projects.map((p, i) => (
+          <li class="project-card reveal" data-reveal-delay={String((i % 2) * 100)}>
+            <a href={`/projects/${p.slug}`} class="project-link">
+              <div class="project-media">
+                <img
+                  src={p.cover}
+                  alt={`${p.name} assessment report cover`}
+                  loading="lazy"
+                  width="900"
+                  height="1273"
+                />
+              </div>
+              <div class="project-body">
+                <h3 class="font-display">{p.name}</h3>
+                <dl class="project-meta">
+                  <div>
+                    <dt class="label-caps">Location</dt>
+                    <dd>{p.location}</dd>
+                  </div>
+                  {p.partner && (
+                    <div>
+                      <dt class="label-caps">Partner</dt>
+                      <dd>{p.partner}</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt class="label-caps">Assessment</dt>
+                    <dd>{p.assessment}</dd>
+                  </div>
+                  <div>
+                    <dt class="label-caps">Period</dt>
+                    <dd>{p.period}</dd>
+                  </div>
+                </dl>
+                {p.highlight && <p class="project-highlight">{p.highlight}</p>}
+                <span class="project-view">
+                  View project
+                  <ArrowUpRight size={16} stroke-width={1.75} aria-hidden="true" />
+                </span>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .projects-section {
+    background: var(--color-stone);
+  }
+
+  .kicker {
+    color: var(--color-moss);
+    margin-bottom: 24px;
+  }
+
+  .projects-headline {
+    font-size: clamp(2.5rem, 4.5vw, var(--text-section));
+  }
+  .projects-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+
+  .projects-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+
+  .project-card {
+    background: #ffffff;
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    transition: transform 0.3s var(--ease-out-calm), box-shadow 0.3s var(--ease-out-calm);
+  }
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-soft-2);
+  }
+
+  .project-link {
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) 1fr;
+    height: 100%;
+  }
+
+  /* Report covers shown whole — a document resting on stone, never cropped. */
+  .project-media {
+    background: var(--color-stone);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+  }
+  .project-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: var(--shadow-soft-1);
+  }
+
+  .project-body {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .project-body h3 {
+    font-size: var(--text-card);
+    font-weight: 600;
+  }
+
+  .project-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 20px;
+  }
+  .project-meta dt {
+    color: rgba(16, 16, 16, 0.55);
+    margin-bottom: 3px;
+    font-size: 0.6875rem;
+  }
+  .project-meta dd {
+    font-size: var(--text-small);
+    color: rgba(16, 16, 16, 0.8);
+  }
+
+  .project-highlight {
+    font-size: var(--text-small);
+    line-height: 1.65;
+    color: rgba(16, 16, 16, 0.62);
+    border-top: 1px solid var(--color-hairline);
+    padding-top: 16px;
+  }
+
+  .project-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+
+  @media (max-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .project-link {
+      grid-template-columns: 1fr;
+    }
+    /* Auto-height column: constrain the document image explicitly. */
+    .project-media img {
+      height: 340px;
+      width: auto;
+      max-width: 100%;
+    }
+  }
+</style>

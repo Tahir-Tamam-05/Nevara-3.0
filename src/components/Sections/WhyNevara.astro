@@ -1,0 +1,91 @@
+---
+/** Section 1 — Why NEVARA exists. Copy status: DRAFT. */
+---
+
+<section id="why" class="section-pad" aria-labelledby="why-heading">
+  <div class="container-site">
+    <div class="why-grid">
+      <div class="reveal">
+        <p class="label-caps kicker">Why NEVARA exists</p>
+        <h2 id="why-heading" class="font-display why-headline">
+          Restoration is happening.<br />
+          <em>Proof is not.</em>
+        </h2>
+      </div>
+      <div class="why-body reveal" data-reveal-delay="120">
+        <p>
+          Across the world, organisations are reviving lakes, rebuilding forests and restoring
+          wetlands. The work is real. But when a funder, a government body or an auditor asks
+          what actually changed, the answer is too often scattered photographs and memory.
+        </p>
+        <p>
+          NEVARA exists to close that gap. We convert satellite observation into verified
+          environmental evidence — so that patient, decades-long ecological work can be seen,
+          trusted and defended.
+        </p>
+      </div>
+    </div>
+
+    <figure class="why-figure reveal" data-reveal-delay="200">
+      <img
+        src="/assets/sequence/desktop/frame_0160.webp"
+        alt="Aerial view of lakes, rivers and forest with monitored site boundaries traced across the landscape"
+        loading="lazy"
+        width="1406"
+        height="698"
+      />
+      <figcaption class="label-caps">Monitored restoration sites · satellite observation</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .kicker {
+    color: var(--color-moss);
+    margin-bottom: 24px;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(40px, 6vw, 96px);
+    align-items: end;
+  }
+
+  .why-headline {
+    font-size: clamp(2.5rem, 4.5vw, var(--text-section));
+    color: var(--color-ink);
+  }
+  .why-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+
+  .why-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: rgba(16, 16, 16, 0.75);
+    max-width: 46ch;
+  }
+
+  .why-figure {
+    margin-top: clamp(48px, 7vw, 96px);
+  }
+  .why-figure img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+  }
+  .why-figure figcaption {
+    margin-top: 16px;
+    color: rgba(16, 16, 16, 0.6);
+  }
+
+  @media (max-width: 900px) {
+    .why-grid {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+</style>

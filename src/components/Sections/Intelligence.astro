@@ -1,0 +1,140 @@
+---
+/**
+ * Section 4 — Environmental Intelligence.
+ * The five indices, explained plainly. One real, cited result.
+ * Copy status: DRAFT. Figures from TGF-BL-RIVR-2026-001 (Bommasandra Lake).
+ */
+import { intelligenceIndices } from '@lib/content';
+---
+
+<section id="intelligence" class="intel-section section-pad" aria-labelledby="intel-heading">
+  <div class="container-site">
+    <div class="reveal">
+      <p class="label-caps kicker">Environmental Intelligence</p>
+      <h2 id="intel-heading" class="font-display intel-headline">
+        What the land is <em>telling us.</em>
+      </h2>
+      <p class="intel-lede">
+        Every satellite pass carries measurements. Read together, across seasons and years, they
+        describe the condition of an ecosystem with scientific precision.
+      </p>
+    </div>
+
+    <dl class="intel-rows">
+      {
+        intelligenceIndices.map(({ abbr, name, reveals }, i) => (
+          <div class="intel-row reveal" data-reveal-delay={String(i * 70)}>
+            <dt>
+              <span class="font-display intel-abbr">{abbr}</span>
+              <span class="label-caps intel-name">{name}</span>
+            </dt>
+            <dd>{reveals}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <figure class="intel-proof reveal">
+      <blockquote>
+        <p>
+          <span class="font-display intel-stat">−0.183 → +0.050</span>
+          Between 2019 and 2025, Bommasandra Lake’s water index crossed zero — the measured
+          boundary between dry land and a functioning water body. A lake, verifiably recovered.
+        </p>
+      </blockquote>
+      <figcaption class="label-caps">
+        Bommasandra Lake · Twin Glacier Foundation · Report TGF-BL-RIVR-2026-001
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .intel-section {
+    background: var(--color-forest);
+    color: var(--color-cream);
+  }
+
+  .kicker {
+    color: rgba(247, 246, 242, 0.55);
+    margin-bottom: 24px;
+  }
+
+  .intel-headline {
+    font-size: clamp(2.5rem, 4.5vw, var(--text-section));
+    color: var(--color-cream);
+  }
+  .intel-headline em {
+    font-weight: 500;
+    color: #a8c3b4;
+  }
+
+  .intel-lede {
+    margin-top: 20px;
+    max-width: 54ch;
+    color: rgba(247, 246, 242, 0.72);
+  }
+
+  .intel-rows {
+    margin-top: clamp(48px, 6vw, 80px);
+    border-top: 1px solid rgba(247, 246, 242, 0.14);
+  }
+
+  .intel-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 2fr;
+    gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(247, 246, 242, 0.14);
+    align-items: baseline;
+  }
+  .intel-row dt {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+  }
+  .intel-abbr {
+    font-size: 2.25rem;
+    font-weight: 500;
+    color: var(--color-cream);
+    min-width: 3.5ch;
+  }
+  .intel-name {
+    color: rgba(247, 246, 242, 0.66);
+  }
+  .intel-row dd {
+    font-size: var(--text-body);
+    line-height: 1.7;
+    color: rgba(247, 246, 242, 0.78);
+    max-width: 56ch;
+  }
+
+  .intel-proof {
+    margin-top: clamp(56px, 7vw, 96px);
+    max-width: 760px;
+  }
+  .intel-stat {
+    display: block;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    color: #cfe4d8;
+  }
+  .intel-proof blockquote p {
+    font-size: var(--text-body-lg);
+    line-height: 1.6;
+    color: rgba(247, 246, 242, 0.86);
+  }
+  .intel-proof figcaption {
+    margin-top: 22px;
+    color: rgba(247, 246, 242, 0.62);
+  }
+
+  @media (max-width: 768px) {
+    .intel-row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+</style>

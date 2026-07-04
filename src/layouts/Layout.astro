@@ -1,0 +1,94 @@
+---
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/cormorant-garamond/500-italic.css';
+import '@fontsource-variable/inter';
+import '@styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Error/utility pages (e.g. 404) should never be indexed or canonicalised. */
+  noindex?: boolean;
+}
+
+const {
+  title = 'NEVARA — Environmental Intelligence',
+  description = 'Environmental monitoring using satellite intelligence and AI. NEVARA converts satellite observations into audit-ready environmental evidence.',
+  noindex = false,
+} = Astro.props;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'NEVARA',
+  description:
+    'Environmental Intelligence company converting satellite observations into audit-ready environmental evidence.',
+  url: Astro.site?.toString() ?? 'https://nevara.earth',
+};
+
+// Canonical URL. Astro's static output serves every route as
+// /path/index.html (i.e. the trailing-slash form is the real, deployed
+// URL) — @astrojs/sitemap generates its entries the same way, so the
+// canonical tag must match that exactly rather than invent a different
+// (non-trailing-slash) form that would itself create duplicate-URL ambiguity.
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {noindex ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href={canonicalURL} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="NEVARA" />
+    <meta property="og:image" content={new URL('/og.jpg', Astro.site ?? Astro.url)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:image" content={new URL('/og.jpg', Astro.site ?? Astro.url)} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <slot />
+    <script>
+      // Pages without the cinematic hero initialise their own motion;
+      // on the home page the hero boots these after the film preloads.
+      import { initSmoothScroll, initAnchorScroll, initReveals } from '@lib/motion';
+      if (!document.querySelector('[data-hero-stage]')) {
+        initSmoothScroll();
+        initAnchorScroll();
+        initReveals();
+      }
+    </script>
+    <style>
+      .skip-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 100;
+        padding: 12px 20px;
+        border-radius: 999px;
+        background: var(--color-forest);
+        color: var(--color-cream);
+        font-size: var(--text-small);
+        transform: translateY(-200%);
+      }
+      .skip-link:focus-visible {
+        transform: none;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+---
+/**
+ * Section 8 — Contact / Assessment request.
+ * No backend yet: the form composes an email in the visitor's mail client.
+ * Recipient is temporary until official contact details are provided.
+ */
+import { contactEmail } from '@lib/content';
+---
+
+<section id="contact" class="contact-section section-pad" aria-labelledby="contact-heading">
+  <div class="container-site contact-grid">
+    <div class="reveal">
+      <p class="label-caps kicker">Request an assessment</p>
+      <h2 id="contact-heading" class="font-display contact-headline">
+        Tell us about <em>your site.</em>
+      </h2>
+      <p class="contact-lede">
+        A lake, a forest, a wetland, a portfolio of restoration commitments — describe it briefly,
+        and we will come back to you with what the satellite record can establish.
+      </p>
+    </div>
+
+    <form class="contact-form reveal" data-contact-form data-recipient={contactEmail}>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="cf-name" class="label-caps">Name</label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required />
+        </div>
+        <div class="form-field">
+          <label for="cf-org" class="label-caps">Organisation</label>
+          <input id="cf-org" name="organisation" type="text" autocomplete="organization" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="cf-email" class="label-caps">Email</label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" required />
+      </div>
+      <div class="form-field">
+        <label for="cf-site" class="label-caps">Site or region</label>
+        <input id="cf-site" name="site" type="text" placeholder="e.g. a lake in Devanahalli, Karnataka" />
+      </div>
+      <div class="form-field">
+        <label for="cf-msg" class="label-caps">What would you like to establish?</label>
+        <textarea id="cf-msg" name="message" rows="4"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary on-dark contact-submit">Send request</button>
+      <p class="contact-note">Opens your email client — nothing is sent automatically.</p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contact-section {
+    background: var(--color-forest);
+    color: var(--color-cream);
+  }
+
+  .kicker {
+    color: rgba(247, 246, 242, 0.55);
+    margin-bottom: 24px;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(48px, 7vw, 112px);
+    align-items: start;
+  }
+
+  .contact-headline {
+    font-size: clamp(2.5rem, 4.5vw, var(--text-section));
+    color: var(--color-cream);
+  }
+  .contact-headline em {
+    font-weight: 500;
+    color: #a8c3b4;
+  }
+
+  .contact-lede {
+    margin-top: 22px;
+    color: rgba(247, 246, 242, 0.72);
+    max-width: 44ch;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+
+  .form-field label {
+    display: block;
+    color: rgba(247, 246, 242, 0.72);
+    margin-bottom: 9px;
+  }
+
+  .form-field input,
+  .form-field textarea {
+    width: 100%;
+    background: rgba(247, 246, 242, 0.07);
+    border: 1px solid rgba(247, 246, 242, 0.18);
+    border-radius: var(--radius-input);
+    padding: 14px 18px;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--color-cream);
+    transition: border-color 0.25s var(--ease-out-calm), background-color 0.25s var(--ease-out-calm);
+  }
+  .form-field input::placeholder,
+  .form-field textarea::placeholder {
+    color: rgba(247, 246, 242, 0.35);
+  }
+  .form-field input:focus,
+  .form-field textarea:focus {
+    outline: none;
+    border-color: rgba(247, 246, 242, 0.55);
+    background: rgba(247, 246, 242, 0.1);
+  }
+  .form-field textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+
+  .contact-submit {
+    align-self: flex-start;
+  }
+
+  .contact-note {
+    font-size: var(--text-caption);
+    color: rgba(247, 246, 242, 0.62);
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]')!;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const recipient = form.dataset.recipient!;
+    const subject = encodeURIComponent('Assessment request — NEVARA');
+    const body = encodeURIComponent(
+      [
+        `Name: ${data.get('name') ?? ''}`,
+        `Organisation: ${data.get('organisation') ?? ''}`,
+        `Email: ${data.get('email') ?? ''}`,
+        `Site or region: ${data.get('site') ?? ''}`,
+        '',
+        `${data.get('message') ?? ''}`,
+      ].join('\n')
+    );
+    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+  });
+</script>

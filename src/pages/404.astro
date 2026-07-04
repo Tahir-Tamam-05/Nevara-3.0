@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '@components/Navbar/Navbar.astro';
+import PageHeader from '@components/PageHeader.astro';
+import Footer from '@components/Footer/Footer.astro';
+---
+
+<Layout
+  title="Page not found — NEVARA"
+  description="This page doesn't exist. Return to NEVARA to continue exploring environmental intelligence verified from space."
+  noindex
+>
+  <Navbar />
+  <main id="main">
+    <PageHeader
+      kicker="404"
+      headline="This page"
+      headlineEm="doesn't exist."
+      lede="The link may be out of date, or the address was mistyped. The rest of NEVARA is exactly where you left it."
+    />
+    <section class="section-pad">
+      <div class="container-site">
+        <div class="actions">
+          <a href="/" class="btn btn-primary">Return home</a>
+          <a href="/contact" class="btn btn-secondary">Contact NEVARA</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+</style>

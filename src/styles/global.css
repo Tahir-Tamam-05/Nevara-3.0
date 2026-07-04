@@ -1,0 +1,253 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   NEVARA design tokens — single source: DESIGN_SYSTEM.md
+   ------------------------------------------------------------------ */
+@theme {
+  /* Color system */
+  --color-cream: #f7f6f2;
+  --color-forest: #0e3b2e;
+  --color-ink: #101010;
+  --color-stone: #ece8df;
+  --color-moss: #4e685a; /* deep enough for AA text on cream */
+  --color-hairline: rgba(0, 0, 0, 0.08);
+  --color-glass: rgba(255, 255, 255, 0.55);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter Variable', 'Inter', system-ui, sans-serif;
+
+  /* Headline scale */
+  --text-hero: 6rem; /* 96px */
+  --text-display: 4.5rem; /* 72px */
+  --text-section: 3.5rem; /* 56px */
+  --text-card: 2rem; /* 32px */
+  --text-body-lg: 1.375rem; /* 22px */
+  --text-body: 1.125rem; /* 18px */
+  --text-small: 0.9375rem; /* 15px */
+  --text-caption: 0.8125rem; /* 13px */
+
+  /* Spacing */
+  --spacing-micro: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-comfortable: 24px;
+  --spacing-lg: 40px;
+  --spacing-section: 96px;
+  --spacing-major: 160px;
+
+  /* Radius */
+  --radius-card: 24px;
+  --radius-report: 18px;
+  --radius-input: 16px;
+
+  /* Shadows — soft only, never harsh */
+  --shadow-soft-1: 0 8px 20px rgba(16, 16, 16, 0.06);
+  --shadow-soft-2: 0 16px 40px rgba(16, 16, 16, 0.1);
+  --shadow-soft-3: 0 28px 60px rgba(16, 16, 16, 0.14);
+
+  /* Motion */
+  --ease-out-calm: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* power2.out */
+}
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+html {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.7;
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgba(14, 59, 46, 0.14);
+}
+
+/* Editorial headline defaults */
+.font-display {
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+/* Uppercase micro-labels */
+.label-caps {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Section rhythm — half the token on each side, so two stacked sections
+   sum to exactly one "major section" gap (160px desktop / 96px mobile)
+   instead of doubling it at every boundary. */
+.section-pad {
+  padding-block: calc(var(--spacing-major) / 2);
+}
+
+.container-site {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 48px;
+}
+
+@media (max-width: 768px) {
+  .container-site {
+    padding-inline: 24px;
+  }
+  .section-pad {
+    padding-block: calc(var(--spacing-section) / 2);
+  }
+}
+
+/* Prose column cap */
+.measure {
+  max-width: 62ch;
+}
+
+/* ------------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 54px;
+  padding-inline: 28px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-out-calm),
+    background-color 0.25s var(--ease-out-calm),
+    border-color 0.25s var(--ease-out-calm),
+    box-shadow 0.25s var(--ease-out-calm);
+}
+
+.btn-primary {
+  background: var(--color-forest);
+  color: var(--color-cream);
+}
+.btn-primary:hover {
+  background: #14503f; /* forest, ~8% lighter */
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft-2);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-forest);
+  border: 1px solid rgba(14, 59, 46, 0.32);
+}
+.btn-secondary:hover {
+  border-color: var(--color-forest);
+  transform: translateY(-2px);
+}
+
+/* On-dark variants (hero, final CTA) */
+.btn-primary.on-dark {
+  background: var(--color-cream);
+  color: var(--color-forest);
+}
+.btn-primary.on-dark:hover {
+  background: #ffffff;
+}
+.btn-secondary.on-dark {
+  color: var(--color-cream);
+  border-color: rgba(247, 246, 242, 0.35);
+}
+.btn-secondary.on-dark:hover {
+  border-color: rgba(247, 246, 242, 0.8);
+}
+
+/* ------------------------------------------------------------------
+   Links — underline sweeps left → right
+   ------------------------------------------------------------------ */
+.link-sweep {
+  position: relative;
+}
+.link-sweep::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease-out-calm);
+}
+.link-sweep:hover::after,
+.link-sweep:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* ------------------------------------------------------------------
+   Cards
+   ------------------------------------------------------------------ */
+.card {
+  background: #ffffff;
+  border-radius: var(--radius-card);
+  padding: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.3s var(--ease-out-calm),
+    box-shadow 0.3s var(--ease-out-calm);
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft-2);
+}
+
+/* ------------------------------------------------------------------
+   Scroll reveal (JS adds .is-revealed)
+   ------------------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+}
+.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.7s var(--ease-out-calm),
+    transform 0.7s var(--ease-out-calm);
+}
+
+/* ------------------------------------------------------------------
+   Accessibility
+   ------------------------------------------------------------------ */
+:focus-visible {
+  outline: 2px solid var(--color-forest);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

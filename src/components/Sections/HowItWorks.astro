@@ -1,0 +1,122 @@
+---
+/**
+ * Assessment methodology — the four-step timeline.
+ * Lives on /reports (the homepage section list intentionally excludes it).
+ */
+import { methodology as steps } from '@lib/content';
+
+interface Props {
+  kicker?: string;
+  headline?: string;
+  headlineEm?: string;
+}
+const {
+  kicker = 'Assessment methodology',
+  headline = 'Four steps.',
+  headlineEm = 'No mystery.',
+} = Astro.props;
+---
+
+<section id="methodology" class="section-pad" aria-labelledby="how-heading">
+  <div class="container-site">
+    <div class="reveal">
+      <p class="label-caps kicker">{kicker}</p>
+      <h2 id="how-heading" class="font-display how-headline">
+        {headline} <em>{headlineEm}</em>
+      </h2>
+    </div>
+
+    <ol class="how-steps">
+      {
+        steps.map(({ n, title, text }, i) => (
+          <li class="how-step reveal" data-reveal-delay={String(i * 110)}>
+            <span class="how-num font-display">{n}</span>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .kicker {
+    color: var(--color-moss);
+    margin-bottom: 24px;
+  }
+
+  .how-headline {
+    font-size: clamp(2.5rem, 4.5vw, var(--text-section));
+  }
+  .how-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+
+  .how-steps {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(24px, 3vw, 48px);
+    margin-top: clamp(48px, 6vw, 80px);
+    position: relative;
+  }
+  /* The connecting thread */
+  .how-steps::before {
+    content: '';
+    position: absolute;
+    top: 26px;
+    left: 2%;
+    right: 26%;
+    height: 1px;
+    background: rgba(14, 59, 46, 0.18);
+  }
+
+  .how-step {
+    position: relative;
+    padding-top: 60px;
+  }
+  .how-num {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    border: 1px solid rgba(14, 59, 46, 0.3);
+    background: var(--color-cream);
+    color: var(--color-forest);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  .how-step h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-card);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .how-step p {
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: rgba(16, 16, 16, 0.68);
+    max-width: 30ch;
+  }
+
+  @media (max-width: 900px) {
+    .how-steps {
+      grid-template-columns: 1fr 1fr;
+      gap: 48px 32px;
+    }
+    .how-steps::before {
+      display: none;
+    }
+  }
+  @media (max-width: 520px) {
+    .how-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

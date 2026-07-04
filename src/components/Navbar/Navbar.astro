@@ -1,0 +1,205 @@
+---
+/**
+ * Site navigation.
+ * mode="after-film" (home): does not exist visually until the cinematic
+ *   sequence completes — then slides down and stays sticky.
+ * mode="immediate" (subpages): present from load.
+ */
+interface Props {
+  mode?: 'after-film' | 'immediate';
+}
+const { mode = 'immediate' } = Astro.props;
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/reports', label: 'Reports' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/contact', label: 'Contact' },
+];
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header
+  class:list={['navbar', { 'is-waiting': mode === 'after-film', 'on-light': mode === 'immediate' }]}
+  data-navbar
+  data-mode={mode}
+>
+  <nav class="navbar-inner container-site" aria-label="Main">
+    <a href="/" class="navbar-brand font-display">NEVARA</a>
+    <ul class="navbar-links">
+      {
+        links.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class="link-sweep"
+              aria-current={currentPath === href ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a href="/contact" class="btn btn-primary navbar-cta">Request Assessment</a>
+  </nav>
+</header>
+
+<style>
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: 84px;
+    display: flex;
+    align-items: center;
+    color: var(--color-cream);
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.4s var(--ease-out-calm),
+      color 0.4s var(--ease-out-calm),
+      border-color 0.4s var(--ease-out-calm),
+      transform 0.8s var(--ease-out-calm),
+      opacity 0.8s var(--ease-out-calm);
+  }
+
+  /* During the film the navigation does not exist. */
+  .navbar.is-waiting {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition-property: none;
+  }
+  .navbar.is-revealing {
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    opacity: 1;
+    transition:
+      transform 0.8s var(--ease-out-calm),
+      opacity 0.8s var(--ease-out-calm),
+      background-color 0.4s var(--ease-out-calm),
+      color 0.4s var(--ease-out-calm),
+      border-color 0.4s var(--ease-out-calm);
+  }
+
+  .navbar.on-light {
+    color: var(--color-ink);
+  }
+
+  .navbar.is-scrolled {
+    background: var(--color-glass);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-soft-1);
+    color: var(--color-ink);
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+  }
+
+  .navbar-links {
+    display: flex;
+    gap: 34px;
+    list-style: none;
+    font-size: var(--text-small);
+    font-weight: 500;
+  }
+  .navbar-links a {
+    opacity: 0.85;
+    transition: opacity 0.25s var(--ease-out-calm);
+  }
+  .navbar-links a:hover,
+  .navbar-links a[aria-current='page'] {
+    opacity: 1;
+  }
+  .navbar-links a[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  .navbar-cta {
+    height: 46px;
+    padding-inline: 22px;
+    font-size: 0.875rem;
+  }
+  /* Over the dark held frame the CTA renders in cream glass. */
+  .navbar:not(.is-scrolled):not(.on-light) .navbar-cta {
+    background: rgba(247, 246, 242, 0.14);
+    color: var(--color-cream);
+    border: 1px solid rgba(247, 246, 242, 0.3);
+  }
+  .navbar:not(.is-scrolled):not(.on-light) .navbar-cta:hover {
+    background: rgba(247, 246, 242, 0.24);
+  }
+
+  @media (max-width: 900px) {
+    .navbar-links {
+      display: none;
+    }
+  }
+  @media (max-width: 480px) {
+    .navbar-cta {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const navbar = document.querySelector<HTMLElement>('[data-navbar]')!;
+  const afterFilm = navbar.dataset.mode === 'after-film';
+  const hero = document.querySelector<HTMLElement>('#top');
+  let revealed = false;
+
+  // rAF-batched: at most one scroll-driven check per rendered frame, and
+  // never a forced synchronous layout read (getBoundingClientRect) outside
+  // that batching — a raw per-scroll-event listener with an unthrottled
+  // layout read is a classic source of scroll jank.
+  let ticking = false;
+  function onScroll(): void {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      if (afterFilm && revealed) return; // nothing left for this listener to do
+      navbar.classList.toggle('is-scrolled', window.scrollY > 40 && !afterFilm);
+      // Fallback for a restored/deep-linked scroll position already past the
+      // hero: reveal immediately rather than waiting for film-complete.
+      if (afterFilm && !revealed && hero && hero.getBoundingClientRect().bottom < 0) {
+        reveal();
+      }
+    });
+  }
+
+  function reveal(): void {
+    if (revealed) return;
+    revealed = true;
+    window.removeEventListener('scroll', onScroll);
+    // Brief pause after the final message settles, then slide down.
+    window.setTimeout(() => {
+      navbar.classList.remove('is-waiting');
+      navbar.classList.add('is-revealing', 'is-scrolled');
+    }, 450);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+
+  if (afterFilm) {
+    window.addEventListener('nevara:film-complete', reveal, { once: true });
+  }
+</script>

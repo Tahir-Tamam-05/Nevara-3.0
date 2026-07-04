@@ -1,0 +1,384 @@
+---
+/**
+ * Interactive report viewer — controlled public preview.
+ * Every report is browsable for its first PUBLIC_PREVIEW_PAGES pages only;
+ * requesting the page beyond that reveals a conversion gate in place of the
+ * stage, never the next page. No PDF or full-report link is exposed here.
+ */
+import { projects, PUBLIC_PREVIEW_PAGES } from '@lib/content';
+import { ChevronLeft, ChevronRight } from 'lucide-astro';
+
+const reports = projects.map((p) => ({
+  slug: p.slug,
+  name: p.name,
+  dir: p.reportDir,
+  // Visitors may only ever browse the first PUBLIC_PREVIEW_PAGES pages,
+  // regardless of how long the underlying report actually is.
+  pages: Math.min(p.pageCount, PUBLIC_PREVIEW_PAGES),
+}));
+---
+
+<section id="viewer" class="section-pad viewer-section" aria-labelledby="viewer-heading">
+  <div class="container-site">
+    <div class="reveal">
+      <p class="label-caps kicker">Interactive preview</p>
+      <h2 id="viewer-heading" class="font-display viewer-headline">
+        Read the <em>public preview.</em>
+      </h2>
+      <p class="viewer-lede">
+        The first {PUBLIC_PREVIEW_PAGES} pages of every assessment, exactly as delivered. The
+        complete report — full analysis, methodology and recommendations — is shared directly
+        with the requesting organisation.
+      </p>
+    </div>
+
+    <div class="viewer reveal" data-viewer data-reports={JSON.stringify(reports)}>
+      <div class="viewer-tabs" role="tablist" aria-label="Choose a report">
+        {
+          reports.map((r, i) => (
+            <button
+              class:list={['viewer-tab', { 'is-active': i === 0 }]}
+              role="tab"
+              aria-selected={i === 0 ? 'true' : 'false'}
+              data-report={r.slug}
+            >
+              {r.name}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="viewer-stage">
+        <div class="viewer-frame" data-viewer-frame>
+          <img
+            class="viewer-page"
+            data-viewer-page
+            src={`/assets/reports/${reports[0].dir}/page_01.webp`}
+            alt={`${reports[0].name} report — page 1`}
+            loading="lazy"
+            width="900"
+            height="1273"
+          />
+
+          <div class="viewer-gate" data-viewer-gate hidden>
+            <p class="label-caps viewer-gate-kicker">Public preview</p>
+            <h3 class="font-display viewer-gate-heading" data-viewer-gate-heading tabindex="-1">
+              You've reached the end of the public preview.
+            </h3>
+            <p class="viewer-gate-body">
+              The complete assessment contains the full environmental analysis, historical
+              comparisons, methodology, findings, recommendations, and supporting evidence.
+              Request access to discuss the complete assessment.
+            </p>
+            <div class="viewer-gate-actions">
+              <a href="/contact" class="btn btn-primary">Request an Assessment</a>
+              <a href="/contact#info-heading" class="btn btn-secondary">Contact NEVARA</a>
+            </div>
+            <button type="button" class="viewer-gate-return link-sweep" data-viewer-return>
+              Return to preview
+            </button>
+          </div>
+        </div>
+
+        <div class="viewer-controls" data-viewer-controls>
+          <button class="viewer-arrow" data-viewer-prev aria-label="Previous page">
+            <ChevronLeft size={20} stroke-width={1.75} aria-hidden="true" />
+          </button>
+          <span class="viewer-counter label-caps" data-viewer-counter aria-live="polite">
+            Page 1 / {reports[0].pages}
+          </span>
+          <button class="viewer-arrow" data-viewer-next aria-label="Next page">
+            <ChevronRight size={20} stroke-width={1.75} aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .viewer-section {
+    background: var(--color-stone);
+  }
+  .kicker {
+    color: var(--color-moss);
+    margin-bottom: 24px;
+  }
+  .viewer-headline {
+    font-size: clamp(2.5rem, 4.5vw, var(--text-section));
+  }
+  .viewer-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+  .viewer-lede {
+    margin-top: 20px;
+    max-width: 58ch;
+    color: rgba(16, 16, 16, 0.7);
+  }
+
+  .viewer {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) 1fr;
+    gap: clamp(28px, 4vw, 56px);
+    margin-top: clamp(40px, 5vw, 64px);
+    align-items: start;
+  }
+
+  .viewer-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .viewer-tab {
+    text-align: left;
+    padding: 16px 20px;
+    border-radius: var(--radius-input);
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: rgba(16, 16, 16, 0.65);
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-out-calm),
+      color 0.25s var(--ease-out-calm),
+      border-color 0.25s var(--ease-out-calm);
+  }
+  .viewer-tab:hover {
+    background: rgba(255, 255, 255, 0.6);
+  }
+  .viewer-tab.is-active {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.06);
+    color: var(--color-forest);
+    box-shadow: var(--shadow-soft-1);
+  }
+
+  .viewer-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .viewer-frame {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+  }
+  .viewer-page {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-report);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-soft-2);
+    background: #fff;
+  }
+
+  /* Gate — replaces the page image inside the same frame, same radius and
+     proportions, so the transition reads as a continuation, not a popup. */
+  .viewer-gate {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 18px;
+    padding: clamp(28px, 5vw, 48px);
+    background: var(--color-forest);
+    border-radius: var(--radius-report);
+    box-shadow: var(--shadow-soft-2);
+    color: var(--color-cream);
+    text-align: left;
+  }
+  .viewer-gate-kicker {
+    color: rgba(247, 246, 242, 0.6);
+  }
+  .viewer-gate-heading {
+    font-size: clamp(1.375rem, 2.6vw, 1.875rem);
+    line-height: 1.2;
+    color: var(--color-cream);
+  }
+  .viewer-gate-heading:focus-visible {
+    outline: 2px solid rgba(247, 246, 242, 0.6);
+    outline-offset: 4px;
+  }
+  .viewer-gate-body {
+    font-size: var(--text-small);
+    line-height: 1.65;
+    color: rgba(247, 246, 242, 0.8);
+  }
+  .viewer-gate-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .viewer-gate-actions .btn-primary {
+    background: var(--color-cream);
+    color: var(--color-forest);
+  }
+  .viewer-gate-actions .btn-primary:hover {
+    background: #ffffff;
+  }
+  .viewer-gate-actions .btn-secondary {
+    color: var(--color-cream);
+    border-color: rgba(247, 246, 242, 0.35);
+  }
+  .viewer-gate-actions .btn-secondary:hover {
+    border-color: rgba(247, 246, 242, 0.8);
+  }
+  .viewer-gate-return {
+    font-size: var(--text-caption);
+    color: rgba(247, 246, 242, 0.6);
+  }
+
+  .viewer-controls {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  .viewer-arrow {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    border: 1px solid rgba(14, 59, 46, 0.3);
+    background: transparent;
+    color: var(--color-forest);
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-out-calm),
+      transform 0.25s var(--ease-out-calm);
+  }
+  .viewer-arrow:hover {
+    background: rgba(255, 255, 255, 0.7);
+    transform: translateY(-2px);
+  }
+  .viewer-arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+    transform: none;
+  }
+  .viewer-counter {
+    color: rgba(16, 16, 16, 0.6);
+    min-width: 9ch;
+    text-align: center;
+  }
+
+  @media (max-width: 820px) {
+    .viewer {
+      grid-template-columns: 1fr;
+    }
+    .viewer-tabs {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .viewer-tab {
+      padding: 11px 16px;
+    }
+  }
+  @media (max-width: 480px) {
+    .viewer-gate {
+      align-items: stretch;
+      text-align: left;
+    }
+    .viewer-gate-actions {
+      flex-direction: column;
+    }
+    .viewer-gate-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  interface ViewerReport {
+    slug: string;
+    name: string;
+    dir: string;
+    pages: number;
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-viewer]')!;
+  const reports: ViewerReport[] = JSON.parse(root.dataset.reports!);
+  const pageImg = root.querySelector<HTMLImageElement>('[data-viewer-page]')!;
+  const counter = root.querySelector<HTMLElement>('[data-viewer-counter]')!;
+  const controls = root.querySelector<HTMLElement>('[data-viewer-controls]')!;
+  const gate = root.querySelector<HTMLElement>('[data-viewer-gate]')!;
+  const gateHeading = root.querySelector<HTMLElement>('[data-viewer-gate-heading]')!;
+  const prevBtn = root.querySelector<HTMLButtonElement>('[data-viewer-prev]')!;
+  const nextBtn = root.querySelector<HTMLButtonElement>('[data-viewer-next]')!;
+  const returnBtn = root.querySelector<HTMLButtonElement>('[data-viewer-return]')!;
+  const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-report]')];
+
+  let report = reports[0];
+  let page = 1;
+  let gated = false;
+
+  function render(): void {
+    pageImg.src = `/assets/reports/${report.dir}/page_${String(page).padStart(2, '0')}.webp`;
+    pageImg.alt = `${report.name} report — page ${page}`;
+    counter.textContent = `Page ${page} / ${report.pages}`;
+    prevBtn.disabled = page === 1;
+  }
+
+  function openGate(): void {
+    gated = true;
+    pageImg.style.visibility = 'hidden';
+    controls.hidden = true;
+    gate.hidden = false;
+    gateHeading.focus();
+  }
+
+  function closeGate(): void {
+    gated = false;
+    pageImg.style.visibility = 'visible';
+    controls.hidden = false;
+    gate.hidden = true;
+  }
+
+  function selectReport(next: ViewerReport): void {
+    report = next;
+    page = 1;
+    closeGate();
+    render();
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (gated || page <= 1) return;
+    page -= 1;
+    render();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (gated) return;
+    if (page >= report.pages) {
+      openGate();
+      return;
+    }
+    page += 1;
+    render();
+  });
+
+  returnBtn.addEventListener('click', () => {
+    closeGate();
+  });
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      selectReport(reports.find((r) => r.slug === tab.dataset.report)!);
+      tabs.forEach((t) => {
+        t.classList.toggle('is-active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+    });
+  });
+
+  render();
+</script>

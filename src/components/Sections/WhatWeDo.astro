@@ -1,0 +1,116 @@
+---
+/** Section 2 — What we do. Copy status: DRAFT. */
+import { Satellite, Leaf, ClipboardList, ArrowLeftRight, Sprout, FileCheck } from 'lucide-astro';
+
+const services = [
+  {
+    icon: Satellite,
+    title: 'Satellite Monitoring',
+    text: 'Continuous observation of every registered site — revisited every few days, without a field team on the ground.',
+  },
+  {
+    icon: Leaf,
+    title: 'Ecological Intelligence',
+    text: 'Spectral indices read vegetation health, surface water and thermal condition directly from orbit.',
+  },
+  {
+    icon: ClipboardList,
+    title: 'Environmental Assessment',
+    text: 'Pre-feasibility and baseline assessments that establish where a site truly stands before work begins.',
+  },
+  {
+    icon: ArrowLeftRight,
+    title: 'Change Detection',
+    text: 'Year-over-year comparison of the same ground — decline and recovery as measurable movement, not opinion.',
+  },
+  {
+    icon: Sprout,
+    title: 'Restoration Monitoring',
+    text: 'Interventions tracked across their full arc, from first clearing to a functioning ecosystem.',
+  },
+  {
+    icon: FileCheck,
+    title: 'Audit-ready Reports',
+    text: 'Findings delivered as referenced, verifiable documents — ready for funders, regulators and auditors.',
+  },
+];
+---
+
+<section id="what" class="section-pad what-section" aria-labelledby="what-heading">
+  <div class="container-site">
+    <div class="reveal">
+      <p class="label-caps kicker">What we do</p>
+      <h2 id="what-heading" class="font-display what-headline">
+        From orbit to <em>audit-ready.</em>
+      </h2>
+    </div>
+
+    <ul class="what-grid">
+      {
+        services.map(({ icon: Icon, title, text }, i) => (
+          <li class="card what-card reveal" data-reveal-delay={String((i % 3) * 90)}>
+            <Icon size={26} stroke-width={1.75} class="what-icon" aria-hidden="true" />
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .what-section {
+    background: var(--color-stone);
+  }
+
+  .kicker {
+    color: var(--color-moss);
+    margin-bottom: 24px;
+  }
+
+  .what-headline {
+    font-size: clamp(2.5rem, 4.5vw, var(--text-section));
+  }
+  .what-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+
+  .what-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+
+  .what-card h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-card);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin: 22px 0 12px;
+  }
+  .what-card p {
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: rgba(16, 16, 16, 0.68);
+  }
+
+  .what-card :global(.what-icon) {
+    color: var(--color-forest);
+  }
+
+  @media (max-width: 1024px) {
+    .what-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .what-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '@components/Navbar/Navbar.astro';
+import Hero from '@components/Hero/Hero.astro';
+import WhyNevara from '@components/Sections/WhyNevara.astro';
+import WhatWeDo from '@components/Sections/WhatWeDo.astro';
+import Intelligence from '@components/Sections/Intelligence.astro';
+import EvidenceShowcase from '@components/Sections/EvidenceShowcase.astro';
+import Projects from '@components/Sections/Projects.astro';
+import Partners from '@components/Sections/Partners.astro';
+import Contact from '@components/Sections/Contact.astro';
+import Footer from '@components/Footer/Footer.astro';
+---
+
+<Layout>
+  <!-- Navigation does not exist until the film completes. -->
+  <Navbar mode="after-film" />
+  <main id="main">
+    <Hero />
+    <WhyNevara />
+    <WhatWeDo />
+    <Intelligence />
+    <EvidenceShowcase />
+    <Projects />
+    <Partners />
+    <Contact />
+  </main>
+  <Footer />
+</Layout>

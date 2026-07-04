@@ -1,0 +1,461 @@
+---
+/**
+ * Cinematic scroll hero.
+ * A pinned full-viewport canvas plays the extracted frame sequence under
+ * scroll control; six story scenes fade through as the film advances.
+ * Copy status: DRAFT — pending approval (see copy deck).
+ */
+interface Scene {
+  id: string;
+  kicker?: string;
+  headline: string;
+  sub?: string;
+}
+
+const scenes: Scene[] = [
+  {
+    id: 'nature',
+    kicker: 'The Earth',
+    headline: 'The Earth remembers.',
+    sub: 'Every forest, every lake, every hectare keeps a living record of change.',
+  },
+  {
+    id: 'observation',
+    kicker: 'Observation',
+    headline: 'We read that record from orbit.',
+    sub: 'Satellites revisit every site on Earth — every few days, year after year.',
+  },
+  {
+    id: 'intelligence',
+    kicker: 'Environmental Intelligence',
+    headline: 'Observation becomes intelligence.',
+    sub: 'Vegetation, water and temperature — measured across seasons, not snapshots.',
+  },
+  {
+    id: 'change',
+    kicker: 'Ecological Change',
+    headline: 'Change becomes measurable.',
+    sub: 'Decline and recovery, mapped hectare by hectare. Verifiable — not anecdotal.',
+  },
+  {
+    id: 'evidence',
+    kicker: 'Environmental Evidence',
+    headline: 'Intelligence becomes evidence.',
+    sub: 'Audit-ready reports, built from the record the Earth already keeps.',
+  },
+];
+---
+
+<section id="top" class="hero-section" aria-label="NEVARA — Environmental Intelligence">
+  <h1 class="sr-only">NEVARA — Environmental Intelligence. Verified from space.</h1>
+
+  <div class="hero-stage" data-hero-stage>
+    <canvas class="hero-canvas" data-hero-canvas aria-hidden="true"></canvas>
+
+    <!-- Static fallback for reduced motion / no JS -->
+    <img
+      class="hero-static"
+      data-hero-static
+      src="/assets/sequence/desktop/frame_0204.webp"
+      alt="Aerial view of lakes and forest at dawn with environmental report pages rising from the landscape"
+      loading="eager"
+      hidden
+    />
+
+    <div class="hero-vignette" aria-hidden="true"></div>
+
+    <div class="hero-scenes">
+      {
+        scenes.map((scene) => (
+          <div class="hero-scene" data-scene={scene.id}>
+            {scene.kicker && <p class="label-caps hero-kicker">{scene.kicker}</p>}
+            <h2 class="font-display hero-headline">{scene.headline}</h2>
+            {scene.sub && <p class="hero-sub">{scene.sub}</p>}
+          </div>
+        ))
+      }
+
+      <!-- Final message only — the film carries no buttons, no chrome.
+           The website (and its navigation) begins after this settles. -->
+      <div class="hero-scene hero-scene-final" data-scene="final">
+        <h2 class="font-display hero-headline">
+          Every ecosystem leaves evidence.<br />
+          <em>We make it visible.</em>
+        </h2>
+      </div>
+    </div>
+
+    <div class="hero-fade" data-hero-fade aria-hidden="true"></div>
+
+    <div class="hero-cue" data-hero-cue aria-hidden="true">
+      <span class="label-caps">Scroll</span>
+      <span class="hero-cue-bar"></span>
+    </div>
+  </div>
+</section>
+
+<noscript>
+  <style>
+    /* Without JS: no loader, no canvas — settled final frame + final message. */
+    .hero-loader,
+    .hero-canvas,
+    .hero-cue {
+      display: none;
+    }
+    img[data-hero-static] {
+      display: block;
+    }
+    .hero-scene-final {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</noscript>
+
+<div class="hero-loader" data-hero-loader>
+  <p class="font-display hero-loader-mark">NEVARA</p>
+  <p class="label-caps hero-loader-tag">Environmental Intelligence</p>
+  <p class="hero-loader-pct" data-hero-progress>0</p>
+</div>
+
+<style>
+  /* Height comes from the stage (plus ScrollTrigger's pin spacer) —
+     a fixed height here would clip the spacer and let content overlap the film. */
+  .hero-section {
+    position: relative;
+  }
+
+  .hero-stage {
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    width: 100%;
+    overflow: hidden;
+    background: #0a120d;
+  }
+
+  .hero-canvas,
+  .hero-static {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .hero-static {
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(6, 14, 10, 0.5), transparent 42%);
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
+  .hero-scenes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero-scene {
+    position: absolute;
+    left: clamp(24px, 5vw, 72px);
+    bottom: clamp(72px, 14vh, 140px);
+    max-width: 720px;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .hero-kicker {
+    color: rgba(247, 246, 242, 0.78);
+    margin-bottom: 18px;
+  }
+
+  .hero-headline {
+    font-size: clamp(2.5rem, 6.5vw, 6rem);
+    color: var(--color-cream);
+    text-shadow: 0 2px 40px rgba(6, 14, 10, 0.45);
+    text-wrap: balance;
+  }
+  .hero-headline em {
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .hero-sub {
+    margin-top: 20px;
+    font-size: var(--text-body-lg);
+    line-height: 1.6;
+    color: rgba(247, 246, 242, 0.82);
+    max-width: 34rem;
+    text-shadow: 0 1px 24px rgba(6, 14, 10, 0.5);
+  }
+
+  .hero-fade {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 34%;
+    background: linear-gradient(to bottom, transparent, var(--color-cream));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hero-cue {
+    position: absolute;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: rgba(247, 246, 242, 0.55);
+  }
+  .hero-cue-bar {
+    width: 1px;
+    height: 36px;
+    background: linear-gradient(to bottom, rgba(247, 246, 242, 0.8), transparent);
+    animation: cue-drift 2.4s var(--ease-out-calm) infinite;
+  }
+  @keyframes cue-drift {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scaleY(0.6);
+      transform-origin: top;
+    }
+    50% {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+  }
+
+  /* Loading experience — dark, wordmark, plain percentage. No spinner. */
+  .hero-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #0a120d;
+    transition: opacity 0.8s var(--ease-out-calm);
+  }
+  .hero-loader.is-done {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hero-loader-mark {
+    font-size: 2.75rem;
+    letter-spacing: 0.22em;
+    margin-left: 0.22em; /* optically recenters the letterspaced wordmark */
+    color: var(--color-cream);
+    font-weight: 500;
+  }
+  .hero-loader-tag {
+    color: rgba(247, 246, 242, 0.45);
+  }
+  .hero-loader-pct {
+    margin-top: 28px;
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-small);
+    color: rgba(247, 246, 242, 0.65);
+  }
+  .hero-loader-pct::after {
+    content: '%';
+    margin-left: 1px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 768px) {
+    .hero-scene {
+      bottom: 96px;
+      right: 24px;
+    }
+    .hero-headline {
+      font-size: clamp(2.125rem, 9vw, 3rem);
+    }
+    .hero-sub {
+      font-size: var(--text-body);
+    }
+  }
+</style>
+
+<script>
+  import { gsap, initSmoothScroll, initAnchorScroll, initReveals, prefersReducedMotion } from '@lib/motion';
+  import { pickSequence, preloadFrames, SequenceRenderer } from '@lib/heroSequence';
+
+  const stage = document.querySelector<HTMLElement>('[data-hero-stage]')!;
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-hero-canvas]')!;
+  const staticImg = document.querySelector<HTMLImageElement>('[data-hero-static]')!;
+  const loader = document.querySelector<HTMLElement>('[data-hero-loader]')!;
+  const progressEl = document.querySelector<HTMLElement>('[data-hero-progress]')!;
+  const fadeEl = document.querySelector<HTMLElement>('[data-hero-fade]')!;
+  const cueEl = document.querySelector<HTMLElement>('[data-hero-cue]')!;
+
+  /** Scene timing windows across the pinned scroll, as 0..1 progress. */
+  const SCENE_WINDOWS: Array<{ id: string; start: number; end: number }> = [
+    { id: 'nature', start: 0.03, end: 0.13 },
+    { id: 'observation', start: 0.18, end: 0.29 },
+    { id: 'intelligence', start: 0.34, end: 0.45 },
+    { id: 'change', start: 0.5, end: 0.61 },
+    { id: 'evidence', start: 0.66, end: 0.77 },
+  ];
+  // The film finishes at 86% of the pin; the final message then holds —
+  // a deliberate pause before the website (and its navigation) appears.
+  const FILM_END = 0.86;
+  const FINAL_START = 0.81;
+  const PIN_LENGTH = '+=500%';
+
+  let filmCompleteFired = false;
+  function fireFilmComplete(): void {
+    if (filmCompleteFired) return;
+    filmCompleteFired = true;
+    window.dispatchEvent(new CustomEvent('nevara:film-complete'));
+  }
+
+  function showStaticExperience(): void {
+    // Reduced motion (or any engine failure): settled final frame + final message.
+    canvas.hidden = true;
+    staticImg.hidden = false;
+    document.querySelectorAll<HTMLElement>('.hero-scene').forEach((el) => {
+      const isFinal = el.dataset.scene === 'final';
+      el.style.opacity = isFinal ? '1' : '0';
+      el.style.visibility = isFinal ? 'visible' : 'hidden';
+    });
+    cueEl.style.display = 'none';
+    loader.classList.add('is-done');
+    // No scroll film to complete — the website (and nav) is available at once.
+    fireFilmComplete();
+    initReveals();
+  }
+
+  async function boot(): Promise<void> {
+    if (prefersReducedMotion()) {
+      showStaticExperience();
+      return;
+    }
+
+    document.documentElement.style.overflow = 'hidden';
+
+    try {
+      const sequence = pickSequence();
+      const frames = await preloadFrames(sequence, (loaded, total) => {
+        progressEl.textContent = String(Math.round((loaded / total) * 100));
+      });
+
+      const renderer = new SequenceRenderer(canvas, frames);
+      renderer.drawFrame(0);
+
+      document.documentElement.style.overflow = '';
+      loader.classList.add('is-done');
+
+      initSmoothScroll();
+      initAnchorScroll();
+      initReveals();
+
+      // One pinned, scrubbed timeline drives both the film and the story —
+      // separate triggers on a pinned element disagree about scroll geometry.
+      const tl = gsap.timeline({
+        defaults: { ease: 'power2.out' },
+        scrollTrigger: {
+          trigger: stage,
+          start: 'top top',
+          end: PIN_LENGTH,
+          pin: true,
+          scrub: 0.6,
+          onUpdate: (self) => {
+            if (self.progress > 0.99) fireFilmComplete();
+          },
+        },
+      });
+
+      // Film: a 0..1 proxy tween maps timeline time to frame index.
+      // It ends at FILM_END; the remainder of the pin holds the last frame.
+      const film = { progress: 0 };
+      tl.to(
+        film,
+        {
+          progress: 1,
+          duration: FILM_END,
+          ease: 'none',
+          onUpdate: () => renderer.render(film.progress),
+        },
+        0
+      );
+      tl.to({}, { duration: 1 - FILM_END }, FILM_END); // hold
+
+      for (const { id, start, end } of SCENE_WINDOWS) {
+        const el = document.querySelector(`[data-scene="${id}"]`);
+        if (!el) continue;
+        const fade = 0.035;
+        tl.fromTo(
+          el,
+          { autoAlpha: 0, y: 24 },
+          { autoAlpha: 1, y: 0, duration: fade },
+          start
+        );
+        tl.to(el, { autoAlpha: 0, y: -18, duration: fade }, end);
+      }
+
+      const finalScene = document.querySelector('[data-scene="final"]');
+      tl.fromTo(
+        finalScene,
+        { autoAlpha: 0, y: 24 },
+        { autoAlpha: 1, y: 0, duration: 0.05 },
+        FINAL_START
+      );
+      tl.to(fadeEl, { opacity: 1, duration: 0.06 }, 0.94);
+      tl.to(cueEl, { autoAlpha: 0, duration: 0.02 }, 0.04);
+      tl.to({}, { duration: 0.001 }, 1); // pad timeline to exactly 1
+
+      // Resizing reallocates the canvas backing store (an expensive GPU
+      // operation) — skip it entirely while the hero is scrolled offscreen.
+      // Mobile browsers fire `resize` constantly as the address bar
+      // shows/hides during ordinary scrolling, so without this guard every
+      // scroll deep into the page would still be doing full canvas
+      // reallocation + redraw work for a canvas nobody can see.
+      let heroInView = true;
+      const visibilityObserver = new IntersectionObserver(
+        ([entry]) => {
+          heroInView = entry.isIntersecting;
+        },
+        { threshold: 0 }
+      );
+      visibilityObserver.observe(stage);
+
+      let resizeTimer = 0;
+      window.addEventListener('resize', () => {
+        if (!heroInView) return;
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => renderer.resize(), 150);
+      });
+    } catch (error) {
+      console.error('Hero sequence failed to initialize:', error);
+      document.documentElement.style.overflow = '';
+      showStaticExperience();
+    }
+  }
+
+  boot();
+</script>

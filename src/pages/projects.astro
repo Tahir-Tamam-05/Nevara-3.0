@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '@components/Navbar/Navbar.astro';
+import PageHeader from '@components/PageHeader.astro';
+import Projects from '@components/Sections/Projects.astro';
+import Contact from '@components/Sections/Contact.astro';
+import Footer from '@components/Footer/Footer.astro';
+---
+
+<Layout
+  title="Projects — NEVARA"
+  description="Current NEVARA projects: lake restoration assessments and impact verification across Karnataka, on record and verifiable."
+>
+  <Navbar />
+  <main id="main">
+    <PageHeader
+      kicker="Projects"
+      headline="The work,"
+      headlineEm="on record."
+      lede="Five sites under assessment or verification. Every claim on these pages traces to a delivered report."
+    />
+    <Projects />
+    <Contact />
+  </main>
+  <Footer />
+</Layout>

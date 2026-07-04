@@ -1,0 +1,319 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '@components/Navbar/Navbar.astro';
+import Contact from '@components/Sections/Contact.astro';
+import Footer from '@components/Footer/Footer.astro';
+import { projects } from '@lib/content';
+import { ArrowLeft } from 'lucide-astro';
+
+export function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project: p } = Astro.props;
+
+// A short strip of actual report pages (cover + following spreads).
+const previewPages = Array.from({ length: Math.min(4, p.pageCount) }, (_, i) => ({
+  src: `/assets/reports/${p.reportDir}/page_${String(i + 1).padStart(2, '0')}.webp`,
+  n: i + 1,
+}));
+---
+
+<Layout
+  title={`${p.name} — NEVARA Projects`}
+  description={`${p.name}, ${p.location} — ${p.assessment} by NEVARA. Reference ${p.reference}.`}
+>
+  <Navbar />
+  <main id="main">
+    <header class="project-header">
+      <div class="container-site">
+        <a href="/projects" class="project-back link-sweep reveal">
+          <ArrowLeft size={15} stroke-width={1.75} aria-hidden="true" />
+          All projects
+        </a>
+        <p class="label-caps kicker reveal" data-reveal-delay="60">{p.assessment}</p>
+        <h1 class="font-display project-headline reveal" data-reveal-delay="120">{p.name}</h1>
+        <dl class="project-facts reveal" data-reveal-delay="180">
+          <div>
+            <dt class="label-caps">Location</dt>
+            <dd>{p.location}</dd>
+          </div>
+          {
+            p.partner && (
+              <div>
+                <dt class="label-caps">Partner</dt>
+                <dd>{p.partner}</dd>
+              </div>
+            )
+          }
+          <div>
+            <dt class="label-caps">Period</dt>
+            <dd>{p.period}</dd>
+          </div>
+          <div>
+            <dt class="label-caps">Reference</dt>
+            <dd>{p.reference}</dd>
+          </div>
+        </dl>
+      </div>
+    </header>
+
+    {
+      p.beforeAfter && (
+        <section class="section-pad ba-section" aria-labelledby="ba-heading">
+          <div class="container-site">
+            <p class="label-caps kicker-cream reveal">Before / After — verified</p>
+            <h2 id="ba-heading" class="font-display ba-headline reveal" data-reveal-delay="80">
+              What the satellite record <em>confirms.</em>
+            </h2>
+            <div class="ba-table-wrap reveal" data-reveal-delay="160">
+              <table class="ba-table">
+                <thead>
+                  <tr>
+                    <th class="label-caps">Parameter</th>
+                    <th class="label-caps">Before</th>
+                    <th class="label-caps">After</th>
+                    <th class="label-caps">Change</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {p.beforeAfter.map((row) => (
+                    <tr>
+                      <td>{row.parameter}</td>
+                      <td>{row.before}</td>
+                      <td>{row.after}</td>
+                      <td class="ba-change">{row.change}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {p.highlight && <p class="ba-note reveal">{p.highlight}</p>}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      p.observations && (
+        <section class="section-pad obs-section" aria-labelledby="obs-heading">
+          <div class="container-site">
+            <p class="label-caps kicker reveal">Verified satellite observations</p>
+            <h2 id="obs-heading" class="font-display obs-headline reveal" data-reveal-delay="80">
+              Where the site <em>stands today.</em>
+            </h2>
+            <ul class="obs-grid">
+              {p.observations.map((o, i) => (
+                <li class="obs-item reveal" data-reveal-delay={String(i * 70)}>
+                  <span class="font-display obs-value">{o.value}</span>
+                  <span class="label-caps obs-label">{o.label}</span>
+                  <span class="obs-note">{o.note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+
+    <section class="section-pad pages-section" aria-labelledby="pages-heading">
+      <div class="container-site">
+        <p class="label-caps kicker reveal">The report</p>
+        <h2 id="pages-heading" class="font-display pages-headline reveal" data-reveal-delay="80">
+          Read the <em>public preview.</em>
+        </h2>
+        <ul class="pages-strip reveal" data-reveal-delay="160">
+          {
+            previewPages.map((page) => (
+              <li>
+                <img
+                  src={page.src}
+                  alt={`${p.name} report — page ${page.n}`}
+                  loading="lazy"
+                  width="900"
+                  height="1273"
+                />
+              </li>
+            ))
+          }
+        </ul>
+        <div class="pages-actions reveal">
+          <a href="/reports#viewer" class="btn btn-primary">Open in viewer</a>
+          <a href="/contact" class="btn btn-secondary">Request an Assessment</a>
+        </div>
+      </div>
+    </section>
+
+    <Contact />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .project-header {
+    padding: calc(84px + clamp(64px, 10vw, 128px)) 0 clamp(48px, 6vw, 80px);
+  }
+  .project-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--color-moss);
+    margin-bottom: 36px;
+  }
+  .kicker {
+    color: var(--color-moss);
+    margin-bottom: 20px;
+  }
+  .project-headline {
+    font-size: clamp(2.75rem, 5.5vw, var(--text-display));
+  }
+  .project-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+    gap: 20px clamp(32px, 5vw, 72px);
+    margin-top: clamp(32px, 4vw, 48px);
+    padding-top: 28px;
+    border-top: 1px solid var(--color-hairline);
+  }
+  .project-facts dt {
+    color: rgba(16, 16, 16, 0.55);
+    margin-bottom: 5px;
+    font-size: 0.6875rem;
+  }
+  .project-facts dd {
+    font-size: var(--text-body);
+    color: rgba(16, 16, 16, 0.85);
+  }
+
+  /* Before / After — verified results on forest green */
+  .ba-section {
+    background: var(--color-forest);
+    color: var(--color-cream);
+  }
+  .kicker-cream {
+    color: rgba(247, 246, 242, 0.62);
+    margin-bottom: 20px;
+  }
+  .ba-headline {
+    font-size: clamp(2.25rem, 4vw, var(--text-section));
+    color: var(--color-cream);
+  }
+  .ba-headline em {
+    font-weight: 500;
+    color: #a8c3b4;
+  }
+  .ba-table-wrap {
+    margin-top: clamp(36px, 5vw, 56px);
+    overflow-x: auto;
+  }
+  .ba-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+  }
+  .ba-table th {
+    text-align: left;
+    color: rgba(247, 246, 242, 0.55);
+    padding: 0 24px 16px 0;
+    border-bottom: 1px solid rgba(247, 246, 242, 0.2);
+    font-weight: 500;
+  }
+  .ba-table td {
+    padding: 20px 24px 20px 0;
+    border-bottom: 1px solid rgba(247, 246, 242, 0.12);
+    font-size: var(--text-body);
+    color: rgba(247, 246, 242, 0.85);
+  }
+  .ba-table td:first-child {
+    font-weight: 500;
+    color: var(--color-cream);
+  }
+  .ba-change {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    color: #cfe4d8;
+  }
+  .ba-note {
+    margin-top: 32px;
+    max-width: 62ch;
+    color: rgba(247, 246, 242, 0.72);
+  }
+
+  /* Verified observations */
+  .obs-section {
+    background: var(--color-stone);
+  }
+  .obs-headline {
+    font-size: clamp(2.25rem, 4vw, var(--text-section));
+  }
+  .obs-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+  .obs-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 24px;
+    margin-top: clamp(36px, 5vw, 56px);
+  }
+  .obs-item {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius-card);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .obs-value {
+    font-size: 2.25rem;
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+  .obs-label {
+    color: rgba(16, 16, 16, 0.6);
+  }
+  .obs-note {
+    font-size: var(--text-caption);
+    color: rgba(16, 16, 16, 0.55);
+  }
+
+  /* Report pages strip */
+  .pages-headline {
+    font-size: clamp(2.25rem, 4vw, var(--text-section));
+  }
+  .pages-headline em {
+    font-weight: 500;
+    color: var(--color-forest);
+  }
+  .pages-strip {
+    list-style: none;
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    padding: clamp(32px, 4vw, 48px) 4px 16px;
+  }
+  .pages-strip li {
+    flex: 0 0 auto;
+    width: clamp(200px, 22vw, 280px);
+  }
+  .pages-strip img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-report);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-soft-1);
+  }
+  .pages-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 24px;
+  }
+</style>

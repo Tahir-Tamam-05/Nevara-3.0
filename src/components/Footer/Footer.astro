@@ -1,0 +1,83 @@
+---
+const year = new Date().getFullYear();
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/reports', label: 'Reports' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<footer class="footer">
+  <div class="container-site footer-inner">
+    <div>
+      <p class="font-display footer-brand">NEVARA</p>
+      <p class="footer-tag">Environmental Intelligence. Verified from space.</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul class="footer-links">
+        {
+          links.map(({ href, label }) => (
+            <li>
+              <a href={href} class="link-sweep">
+                {label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+  <div class="container-site footer-bottom">
+    <p>© {year} NEVARA</p>
+    <p class="label-caps">Monitor · Verify · Report</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--color-hairline);
+    padding: 64px 0 40px;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .footer-brand {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--color-forest);
+  }
+  .footer-tag {
+    margin-top: 10px;
+    font-size: var(--text-small);
+    color: rgba(16, 16, 16, 0.55);
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    font-size: var(--text-small);
+    color: rgba(16, 16, 16, 0.7);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-hairline);
+    font-size: var(--text-caption);
+    color: rgba(16, 16, 16, 0.6);
+  }
+</style>
